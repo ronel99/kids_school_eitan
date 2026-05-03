@@ -1,10 +1,10 @@
 <!DOCTYPE html>
 <html lang="he" dir="rtl">
 <head>
-    
-    <!-- תגיות Meta לתצוגה מקדימה -->
+    <!-- תגיות Meta לתצוגה מקדימה (WhatsApp/Social Media) -->
     <meta property="og:title" content="אירועים קרובים ג'1">
     <meta property="og:description" content="לוח אירועים, מבחנים ומטלות לכיתה ג'1.">
+    <!-- וודא שהקובץ thumbnail.png נמצא בתיקייה הראשית ב-GitHub וגודלו קטן מ-300KB -->
     <meta property="og:image" content="https://ronel99.github.io/kids_school_eitan/thumbnail.png">
     <meta property="og:image:width" content="1200">
     <meta property="og:image:height" content="630">
@@ -33,27 +33,29 @@
             background-color: var(--bg-color);
             display: flex;
             justify-content: center;
-            padding: 20px;
+            padding: 15px;
             margin: 0;
+            direction: rtl;
         }
 
         .container {
             background-color: #ffffff;
             width: 100%;
-            max-width: 550px;
+            max-width: 500px;
             border-radius: 24px;
             box-shadow: 0 10px 30px rgba(0,0,0,0.08);
-            padding: 25px;
-            overflow: hidden; /* שומר על פינות מעוגלות אם התמונה צמודה למעלה */
+            padding: 20px;
+            box-sizing: border-box;
+            overflow: hidden;
         }
 
-        /* עיצוב התמונה ככותרת */
+        /* תמונת כותרת במקום H1 */
         .header-image {
             width: 100%;
             height: auto;
             display: block;
-            margin: 0 auto 25px auto;
-            border-radius: 12px; /* מוסיף עידון לתמונה */
+            margin: 0 auto 20px auto;
+            border-radius: 12px;
         }
 
         .event-list {
@@ -64,60 +66,66 @@
 
         .event-item {
             display: flex;
+            flex-direction: row-reverse; /* יישור: תאריך מימין, כפתורים משמאל */
             align-items: center;
-            padding: 14px;
+            padding: 12px;
             border-radius: 16px;
             background: #fff;
             border: 1px solid #f1f5f9;
+            gap: 10px;
         }
 
         .date {
-            font-size: 1.1rem;
+            font-size: 1rem;
             font-weight: 700;
             color: var(--text-main);
-            width: 85px;
+            width: 75px;
             flex-shrink: 0;
+            text-align: right;
         }
 
         .title {
             flex-grow: 1;
-            font-size: 1.05rem;
+            font-size: 1rem;
             color: var(--text-sub);
-            padding: 0 10px;
             text-align: right;
             font-weight: 500;
+            line-height: 1.3;
         }
 
         .action-buttons {
             display: flex;
-            gap: 8px;
+            flex-direction: row-reverse; /* כפתור יומן מימין לכפתור חומר */
+            gap: 6px;
             flex-shrink: 0;
+            align-items: center;
         }
 
         .btn-link {
             text-decoration: none;
-            padding: 8px 12px;
+            padding: 8px 10px;
             border-radius: 10px;
             font-size: 0.85rem;
             font-weight: 600;
             display: inline-flex;
             align-items: center;
             justify-content: center;
-            gap: 5px;
+            gap: 4px;
             transition: all 0.2s;
+            white-space: nowrap; /* מונע מהטקסט בכפתור לרדת שורה */
         }
 
         .btn-material {
             background-color: var(--primary-blue);
             color: white;
             box-shadow: 0 4px 6px rgba(59, 130, 246, 0.15);
-            min-width: 90px;
         }
 
         .btn-calendar {
             background-color: white;
             color: var(--secondary-green);
             border: 1px solid var(--secondary-green);
+            padding: 7px; /* שומר על הכפתור ריבועי יותר */
         }
 
         .btn-link:hover {
@@ -126,12 +134,20 @@
         }
 
         .loading { text-align: center; color: #94a3b8; padding: 20px; }
+
+        /* התאמות למסכים קטנים מאוד (מובייל) */
+        @media (max-width: 400px) {
+            .event-item { padding: 10px 8px; gap: 5px; }
+            .date { width: 55px; font-size: 0.85rem; }
+            .title { font-size: 0.9rem; }
+            .btn-link { padding: 6px 8px; font-size: 0.75rem; }
+        }
     </style>
 </head>
 <body>
 
 <div class="container">
-    <!-- החלפת ה-h1 בתמונה -->
+    <!-- כותרת תמונה -->
     <img src="thumbnail.png" alt="אירועים קרובים ג'1" class="header-image">
     
     <div id="loader" class="loading">טוען נתונים...</div>
@@ -139,20 +155,19 @@
 </div>
 
 <script>
-    // הקוד של ה-JavaScript נשאר ללא שינוי
     const SHEET_CSV_URL = 'https://docs.google.com/spreadsheets/d/e/2PACX-1vT3CbYUVUDzXq2mZ1eZ0u1VQPJuZ7tUj3cGjYad9WDHq5ezf5kveHHQ2UrAcKWlV-7dJsgKM35tsud7/pub?gid=0&single=true&output=csv';
     const CACHE_BUSTER = `&t=${new Date().getTime()}`;
 
     function generateCalendarLink(title, dateStr) {
         try {
             const parts = dateStr.split('/');
-            const day = parts[0].padStart(2, '0');
-            const month = parts[1].padStart(2, '0');
+            const day = parts[0].trim().padStart(2, '0');
+            const month = parts[1].trim().split('-')[0].padStart(2, '0'); // מטפל בטווח תאריכים
             const year = new Date().getFullYear();
             const formattedDate = `${year}${month}${day}`;
             const googleDate = `${formattedDate}/${formattedDate}`;
             const baseUrl = "https://www.google.com/calendar/render?action=TEMPLATE";
-            return `${baseUrl}&text=${encodeURIComponent(title + " - כיתה ג'1")}&dates=${googleDate}&details=${encodeURIComponent("הוסף דרך אפליקציית האירועים")}`;
+            return `${baseUrl}&text=${encodeURIComponent(title + " - ג'1")}&dates=${googleDate}`;
         } catch (e) { return "#"; }
     }
 
@@ -167,9 +182,8 @@
     }
 
     function getFileIcon(buttonText) {
-        const lowerText = buttonText.toLowerCase();
-        if (lowerText.includes('מבחן') || lowerText.includes('חומר') || lowerText.includes('דף')) return '📄';
-        if (lowerText.includes('מצגת') || lowerText.includes('צפה')) return '🖼️';
+        if (buttonText.includes('מבחן') || buttonText.includes('חומר')) return '📄';
+        if (buttonText.includes('מצגת') || buttonText.includes('צפה')) return '🖼️';
         return '📂';
     }
 
@@ -184,12 +198,15 @@
             listContainer.innerHTML = '';
 
             rows.forEach(row => {
-                const columns = row.split(',').map(col => col.trim());
+                // פיצול חכם שמטפל בפסיקים בתוך מרכאות (אם יש)
+                const columns = row.split(/,(?=(?:(?:[^"]*"){2})*[^"]*$)/).map(col => col.replace(/"/g, '').trim());
+                
                 if (columns.length >= 2) {
                     const dateStr = columns[0];
                     const title = columns[1];
                     let link = columns[2] || '';
                     let buttonText = (columns[3] && columns[3] !== "") ? columns[3] : "חומר";
+
                     const calendarUrl = generateCalendarLink(title, dateStr);
                     const hasLink = link.toLowerCase().startsWith('http');
                     const icon = getFileIcon(buttonText);
@@ -215,9 +232,10 @@
                 }
             });
         } catch (error) {
-            document.getElementById('loader').innerText = 'שגיאה בטעינה.';
+            document.getElementById('loader').innerText = 'שגיאה בטעינת הנתונים.';
         }
     }
+
     fetchEvents();
 </script>
 
