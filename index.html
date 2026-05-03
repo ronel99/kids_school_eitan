@@ -3,18 +3,85 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>אירועים קרובים ג'1 - דינמי</title>
+    <title>אירועים קרובים ג'1</title>
     <style>
-        /* (הסטייל נשאר זהה למה שנתתי קודם, רק הוספתי אנימציית טעינה קטנה) */
-        body { font-family: 'Segoe UI', sans-serif; background-color: #f0f4f8; display: flex; justify-content: center; padding: 20px; }
-        .container { background: white; width: 100%; max-width: 500px; border-radius: 20px; padding: 30px; box-shadow: 0 10px 25px rgba(0,0,0,0.05); }
-        h1 { text-align: center; color: #334155; }
-        .event-list { display: flex; flex-direction: column; gap: 15px; }
-        .event-item { display: flex; align-items: center; justify-content: space-between; padding: 12px; border-radius: 12px; border-bottom: 1px solid #eee; }
-        .date { font-size: 1.3rem; font-weight: bold; min-width: 90px; }
-        .title { flex-grow: 1; font-size: 1.1rem; }
-        .btn-link { background: #3b82f6; color: white; text-decoration: none; padding: 6px 12px; border-radius: 8px; font-size: 0.85rem; }
-        .loading { text-align: center; color: #64748b; font-style: italic; }
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background-color: #f0f4f8;
+            display: flex;
+            justify-content: center;
+            padding: 20px;
+            margin: 0;
+        }
+
+        .container {
+            background-color: #ffffff;
+            width: 100%;
+            max-width: 500px;
+            border-radius: 20px;
+            box-shadow: 0 10px 25px rgba(0,0,0,0.05);
+            padding: 30px;
+        }
+
+        h1 {
+            text-align: center;
+            color: #334155;
+            font-size: 2rem;
+            margin-bottom: 30px;
+        }
+
+        .event-list {
+            display: flex;
+            flex-direction: column;
+            gap: 15px;
+        }
+
+        .event-item {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            padding: 15px;
+            border-radius: 12px;
+            background-color: #fff;
+            border-bottom: 1px solid #f1f5f9;
+        }
+
+        .date {
+            font-size: 1.3rem;
+            font-weight: bold;
+            color: #1e293b;
+            min-width: 90px;
+        }
+
+        .title {
+            flex-grow: 1;
+            font-size: 1.1rem;
+            color: #475569;
+            text-align: right;
+            padding-right: 10px;
+        }
+
+        .btn-link {
+            background-color: #3b82f6;
+            color: white;
+            text-decoration: none;
+            padding: 8px 16px;
+            border-radius: 8px;
+            font-size: 0.85rem;
+            font-weight: 600;
+            transition: background-color 0.2s;
+            white-space: nowrap;
+        }
+
+        .btn-link:hover {
+            background-color: #2563eb;
+        }
+
+        .loading {
+            text-align: center;
+            color: #64748b;
+            font-style: italic;
+        }
     </style>
 </head>
 <body>
@@ -22,13 +89,11 @@
 <div class="container">
     <h1>אירועים קרובים ג'1</h1>
     <div id="loader" class="loading">טוען נתונים מהגיליון...</div>
-    <div class="event-list" id="event-list">
-        <!-- הנתונים יוזרקו כאן ע"י ה-JavaScript -->
-    </div>
+    <div class="event-list" id="event-list"></div>
 </div>
 
 <script>
-    // החלף את הכתובת הזו בקישור ה-CSV מה-Google Sheet שלך
+    // הדבק כאן את קישור ה-CSV שלך
     const SHEET_CSV_URL = 'https://docs.google.com/spreadsheets/d/e/2PACX-1vT3CbYUVUDzXq2mZ1eZ0u1VQPJuZ7tUj3cGjYad9WDHq5ezf5kveHHQ2UrAcKWlV-7dJsgKM35tsud7/pub?gid=0&single=true&output=csv';
 
     async function fetchEvents() {
@@ -36,37 +101,38 @@
             const response = await fetch(SHEET_CSV_URL);
             const data = await response.text();
             
-            // עיבוד ה-CSV (דילוג על שורת הכותרת)
-            const rows = data.split('\n').slice(1);
+            // פיצול שורות תוך התחשבות בתווי סוף שורה שונים
+            const rows = data.split(/\r?\n/).slice(1); 
             const listContainer = document.getElementById('event-list');
             const loader = document.getElementById('loader');
             
-            listContainer.innerHTML = ''; // ניקוי הרשימה
+            listContainer.innerHTML = '';
             loader.style.display = 'none';
 
             rows.forEach(row => {
-    const columns = row.split(',');
-    if (columns.length >= 2) {
-        const date = columns[0].trim();
-        const title = columns[1].trim();
-        const link = columns[2] ? columns[2].trim() : '#';
-        
-        // משיכת הטקסט מהעמודה הרביעית (אינדקס 3), אם היא ריקה נשתמש בברירת מחדל
-        const buttonText = (columns[3] && columns[3].trim() !== "") ? columns[3].trim() : "חומר למטלה";
+                // שימוש בביטוי רגולרי כדי לפצל פסיקים בצורה בטוחה
+                const columns = row.split(',');
+                
+                if (columns.length >= 2 && columns[0].trim() !== "") {
+                    const date = columns[0].trim();
+                    const title = columns[1].trim();
+                    const link = columns[2] ? columns[2].trim() : '';
+                    const buttonText = columns[3] ? columns[3].trim() : 'חומר';
 
-        const eventHtml = `
-            <div class="event-item">
-                <span class="date">${date}</span>
-                <span class="title">${title}</span>
-                ${link !== '#' ? `<a href="${link}" target="_blank" class="btn-link">${buttonText}</a>` : ''}
-            </div>
-        `;
-        listContainer.innerHTML += eventHtml;
-    }
-});
-
+                    const eventHtml = `
+                        <div class="event-item">
+                            <span class="date">${date}</span>
+                            <span class="title">${title}</span>
+                            ${link && link !== '#' && link.startsWith('http') ? 
+                                `<a href="${link}" target="_blank" class="btn-link">${buttonText}</a>` : 
+                                ''}
+                        </div>
+                    `;
+                    listContainer.innerHTML += eventHtml;
+                }
+            });
         } catch (error) {
-            console.error('Error fetching sheet:', error);
+            console.error('Error:', error);
             document.getElementById('loader').innerText = 'שגיאה בטעינת הנתונים.';
         }
     }
