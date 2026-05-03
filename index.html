@@ -11,11 +11,10 @@
             --text-main: #1e293b;
             --text-sub: #475569;
             --bg-color: #f8fafc;
-            --card-bg: #ffffff;
         }
 
         body {
-            font-family: 'Segoe UI', system-ui, -apple-system, sans-serif;
+            font-family: 'Segoe UI', system-ui, sans-serif;
             background-color: var(--bg-color);
             display: flex;
             justify-content: center;
@@ -24,7 +23,7 @@
         }
 
         .container {
-            background-color: var(--card-bg);
+            background-color: #ffffff;
             width: 100%;
             max-width: 500px;
             border-radius: 24px;
@@ -43,7 +42,7 @@
         .event-list {
             display: flex;
             flex-direction: column;
-            gap: 8px;
+            gap: 10px;
         }
 
         .event-item {
@@ -52,19 +51,13 @@
             padding: 16px;
             border-radius: 16px;
             border-bottom: 1px solid #f1f5f9;
-            transition: background-color 0.2s;
         }
 
-        .event-item:hover {
-            background-color: #fcfdfe;
-        }
-
-        /* עימוד עמודות */
         .date {
             font-size: 1.2rem;
             font-weight: 700;
             color: var(--text-main);
-            width: 100px; /* רוחב קבוע לתאריך ליישור מושלם */
+            width: 100px;
             flex-shrink: 0;
         }
 
@@ -72,15 +65,14 @@
             flex-grow: 1;
             font-size: 1.1rem;
             color: var(--text-sub);
-            padding: 0 15px;
+            padding: 0 10px;
             text-align: right;
         }
 
-        /* מכולת כפתור בגודל קבוע */
         .btn-container {
-            width: 110px; 
+            width: 130px; 
             display: flex;
-            justify-content: flex-start;
+            justify-content: flex-end;
             flex-shrink: 0;
         }
 
@@ -90,102 +82,113 @@
             text-decoration: none;
             width: 100%;
             text-align: center;
-            padding: 9px 0;
-            border-radius: 10px;
+            padding: 10px 4px;
+            border-radius: 12px;
             font-size: 0.85rem;
             font-weight: 600;
             transition: all 0.2s;
-            box-shadow: 0 4px 6px -1px rgba(59, 130, 246, 0.15);
-            display: block;
+            box-shadow: 0 4px 6px rgba(59, 130, 246, 0.15);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 6px;
         }
 
         .btn-link:hover {
             background-color: #2563eb;
             transform: translateY(-1px);
-            box-shadow: 0 6px 8px -1px rgba(59, 130, 246, 0.25);
         }
 
-        .empty-space {
-            width: 110px;
-        }
-
-        .loading {
-            text-align: center;
-            color: #94a3b8;
-            padding: 20px;
-            font-size: 1rem;
-        }
-
-        @media (max-width: 400px) {
-            .date { width: 80px; font-size: 1rem; }
-            .title { font-size: 1rem; }
-            .btn-container { width: 90px; }
-        }
+        .empty-space { width: 130px; }
+        .loading { text-align: center; color: #94a3b8; padding: 20px; }
     </style>
 </head>
 <body>
 
 <div class="container">
     <h1>אירועים קרובים ג'1</h1>
-    <div id="loader" class="loading">טוען נתונים מעודכנים...</div>
+    <div id="loader" class="loading">מעדכן נתונים...</div>
     <div class="event-list" id="event-list"></div>
 </div>
 
 <script>
-    // החלף בקישור ה-CSV שלך
     const SHEET_CSV_URL = 'https://docs.google.com/spreadsheets/d/e/2PACX-1vT3CbYUVUDzXq2mZ1eZ0u1VQPJuZ7tUj3cGjYad9WDHq5ezf5kveHHQ2UrAcKWlV-7dJsgKM35tsud7/pub?gid=0&single=true&output=csv';
-    
-    // הוספת Timestamp כדי למנוע טעינה מהזיכרון הישן (Cache)
     const CACHE_BUSTER = `&t=${new Date().getTime()}`;
+
+    // פונקציה להמרת קישורי גוגל דרייב לתצוגה ישירה
+    function formatDriveLink(url) {
+        if (url.includes('drive.google.com')) {
+            const fileIdMatch = url.match(/\/d\/([^/]+)/);
+            if (fileIdMatch && fileIdMatch[1]) {
+                return `https://drive.google.com/uc?export=view&id=${fileIdMatch[1]}`;
+            }
+        }
+        return url;
+    }
+
+    // פונקציה לבחירת אייקון לפי סיומת קובץ או תוכן
+    function getFileIcon(url, buttonText) {
+        const lowerUrl = url.toLowerCase();
+        if (lowerUrl.endsWith('.pdf')) return '📄';
+        if (lowerUrl.match(/\.(jpg|jpeg|png|gif|webp)$/)) return '🖼️';
+        if (lowerUrl.includes('drive.google.com') || buttonText.includes('חומר') || buttonText.includes('דף')) return '📂';
+        if (buttonText.includes('פרטים') || buttonText.includes('מידע')) return 'i️';
+        return '🔗'; // ברירת מחדל
+    }
 
     async function fetchEvents() {
         try {
             const response = await fetch(SHEET_CSV_URL + CACHE_BUSTER);
             const data = await response.text();
-            
-            // עיבוד השורות: ניקוי רווחים והתעלמות משורות ריקות
             const rows = data.split(/\r?\n/).filter(row => row.trim() !== "").slice(1); 
             const listContainer = document.getElementById('event-list');
-            const loader = document.getElementById('loader');
             
+            document.getElementById('loader').style.display = 'none';
             listContainer.innerHTML = '';
-            loader.style.display = 'none';
 
             rows.forEach(row => {
-                // פיצול לפי פסיק וניקוי רווחים מכל תא
                 const columns = row.split(',').map(col => col.trim());
-                
                 if (columns.length >= 2) {
                     const date = columns[0];
                     const title = columns[1];
-                    const link = columns[2] || '';
-                    
-                    // בדיקה אם קיים טקסט לכפתור בעמודה D, אחרת ברירת מחדל
-                    const buttonText = (columns[3] && columns[3] !== "") ? columns[3] : "חומר למטלה";
+                    let link = columns[2] || '';
+                    let buttonText = (columns[3] && columns[3] !== "") ? columns[3] : "חומר למטלה";
 
                     const hasLink = link.toLowerCase().startsWith('http');
-
-                    const eventHtml = `
-                        <div class="event-item">
-                            <span class="date">${date}</span>
-                            <span class="title">${title}</span>
-                            <div class="btn-container">
-                                ${hasLink ? 
-                                    `<a href="${link}" target="_blank" class="btn-link">${buttonText}</a>` : 
-                                    '<div class="empty-space"></div>'}
+                    
+                    if (hasLink) {
+                        link = formatDriveLink(link);
+                        const icon = getFileIcon(link, buttonText);
+                        
+                        const eventHtml = `
+                            <div class="event-item">
+                                <span class="date">${date}</span>
+                                <span class="title">${title}</span>
+                                <div class="btn-container">
+                                    <a href="${link}" target="_blank" class="btn-link">
+                                        <span>${icon}</span>
+                                        <span>${buttonText}</span>
+                                    </a>
+                                </div>
                             </div>
-                        </div>
-                    `;
-                    listContainer.innerHTML += eventHtml;
+                        `;
+                        listContainer.innerHTML += eventHtml;
+                    } else {
+                        listContainer.innerHTML += `
+                            <div class="event-item">
+                                <span class="date">${date}</span>
+                                <span class="title">${title}</span>
+                                <div class="btn-container"><div class="empty-space"></div></div>
+                            </div>
+                        `;
+                    }
                 }
             });
         } catch (error) {
-            console.error("Fetch error:", error);
-            document.getElementById('loader').innerText = 'שגיאה בטעינה. וודא שהגיליון מפורסם כ-CSV.';
+            document.getElementById('loader').innerText = 'שגיאה בטעינה.';
         }
     }
 
-    // הפעלה
     fetchEvents();
 </script>
 
