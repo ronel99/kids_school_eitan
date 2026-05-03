@@ -8,6 +8,7 @@
     <style>
         :root {
             --primary-blue: #3b82f6;
+            --secondary-green: #10b981;
             --text-main: #1e293b;
             --text-sub: #475569;
             --bg-color: #f8fafc;
@@ -25,87 +26,91 @@
         .container {
             background-color: #ffffff;
             width: 100%;
-            max-width: 500px;
+            max-width: 550px;
             border-radius: 24px;
             box-shadow: 0 10px 30px rgba(0,0,0,0.08);
-            padding: 30px;
+            padding: 25px;
         }
 
         h1 {
             text-align: center;
             color: var(--text-main);
-            font-size: 2.2rem;
-            margin-bottom: 35px;
+            font-size: 2rem;
+            margin-bottom: 30px;
             font-weight: 800;
         }
 
         .event-list {
             display: flex;
             flex-direction: column;
-            gap: 10px;
+            gap: 12px;
         }
 
         .event-item {
             display: flex;
             align-items: center;
-            padding: 16px;
+            padding: 14px;
             border-radius: 16px;
-            border-bottom: 1px solid #f1f5f9;
+            background: #fff;
+            border: 1px solid #f1f5f9;
         }
 
         .date {
-            font-size: 1.2rem;
+            font-size: 1.1rem;
             font-weight: 700;
             color: var(--text-main);
-            width: 100px;
+            width: 85px;
             flex-shrink: 0;
         }
 
         .title {
             flex-grow: 1;
-            font-size: 1.1rem;
+            font-size: 1.05rem;
             color: var(--text-sub);
             padding: 0 10px;
             text-align: right;
+            font-weight: 500;
         }
 
-        .btn-container {
-            width: 135px; 
+        .action-buttons {
             display: flex;
-            justify-content: flex-end;
+            gap: 8px;
             flex-shrink: 0;
         }
 
         .btn-link {
-            background-color: var(--primary-blue);
-            color: white;
             text-decoration: none;
-            width: 100%;
-            padding: 10px 4px;
-            border-radius: 12px;
+            padding: 8px 12px;
+            border-radius: 10px;
             font-size: 0.85rem;
             font-weight: 600;
-            transition: all 0.2s;
-            box-shadow: 0 4px 6px rgba(59, 130, 246, 0.15);
             display: inline-flex;
             align-items: center;
             justify-content: center;
-            gap: 8px;
-            line-height: 1;
+            gap: 5px;
+            transition: all 0.2s;
         }
 
-        .btn-link span.icon {
-            font-size: 1.1rem;
-            display: flex;
-            align-items: center;
+        /* כפתור חומר לימודי - כחול */
+        .btn-material {
+            background-color: var(--primary-blue);
+            color: white;
+            box-shadow: 0 4px 6px rgba(59, 130, 246, 0.15);
+            min-width: 90px;
+        }
+
+        /* כפתור יומן - ירוק */
+        .btn-calendar {
+            background-color: white;
+            color: var(--secondary-green);
+            border: 1px solid var(--secondary-green);
         }
 
         .btn-link:hover {
-            background-color: #2563eb;
             transform: translateY(-1px);
+            filter: brightness(0.95);
         }
 
-        .empty-space { width: 135px; }
         .loading { text-align: center; color: #94a3b8; padding: 20px; }
     </style>
 </head>
@@ -113,27 +118,47 @@
 
 <div class="container">
     <h1>אירועים קרובים ג'1</h1>
-    <div id="loader" class="loading">מעדכן נתונים...</div>
-    <div class="event-list" id="event-list"></div>
+    <div id="loader" class="loading">טוען נתונים...</div>
+    <div id="event-list" class="event-list"></div>
 </div>
 
 <script>
     const SHEET_CSV_URL = 'https://docs.google.com/spreadsheets/d/e/2PACX-1vT3CbYUVUDzXq2mZ1eZ0u1VQPJuZ7tUj3cGjYad9WDHq5ezf5kveHHQ2UrAcKWlV-7dJsgKM35tsud7/pub?gid=0&single=true&output=csv';
     const CACHE_BUSTER = `&t=${new Date().getTime()}`;
 
-    // פונקציית המרה שמבטיחה פתיחה בתוך הדפדפן (Preview Mode)
+    // פונקציה ליצירת קישור הוספה ליומן גוגל
+    function generateCalendarLink(title, dateStr) {
+        try {
+            // הנחה: התאריך בפורמט D/M (למשל 12/5)
+            const parts = dateStr.split('/');
+            const day = parts[0].padStart(2, '0');
+            const month = parts[1].padStart(2, '0');
+            const year = new Date().getFullYear();
+            
+            // יצירת מחרוזת תאריך בפורמט YYYYMMDD
+            const formattedDate = `${year}${month}${day}`;
+            const googleDate = `${formattedDate}/${formattedDate}`;
+            
+            const baseUrl = "https://www.google.com/calendar/render?action=TEMPLATE";
+            const url = `${baseUrl}&text=${encodeURIComponent(title + " - כיתה ג'1")}&dates=${googleDate}&details=${encodeURIComponent("הוסף דרך אפליקציית האירועים")}`;
+            
+            return url;
+        } catch (e) {
+            return "#";
+        }
+    }
+
     function formatDriveLink(url) {
         if (url.includes('drive.google.com')) {
             const fileIdMatch = url.match(/\/d\/([^/]+)/) || url.match(/id=([^&]+)/);
             if (fileIdMatch && fileIdMatch[1]) {
-                // שימוש ב-Drive Viewer הרשמי שמבטיח View ולא Download
                 return `https://drive.google.com/file/d/${fileIdMatch[1]}/view?usp=sharing`;
             }
         }
         return url;
     }
 
-    function getFileIcon(url, buttonText) {
+    function getFileIcon(buttonText) {
         const lowerText = buttonText.toLowerCase();
         if (lowerText.includes('מבחן') || lowerText.includes('חומר') || lowerText.includes('דף')) return '📄';
         if (lowerText.includes('מצגת') || lowerText.includes('צפה')) return '🖼️';
@@ -154,36 +179,33 @@
             rows.forEach(row => {
                 const columns = row.split(',').map(col => col.trim());
                 if (columns.length >= 2) {
-                    const date = columns[0];
+                    const dateStr = columns[0];
                     const title = columns[1];
                     let link = columns[2] || '';
                     let buttonText = (columns[3] && columns[3] !== "") ? columns[3] : "חומר";
 
-                    if (link.toLowerCase().startsWith('http')) {
-                        link = formatDriveLink(link);
-                        const icon = getFileIcon(link, buttonText);
-                        
-                        listContainer.innerHTML += `
-                            <div class="event-item">
-                                <span class="date">${date}</span>
-                                <span class="title">${title}</span>
-                                <div class="btn-container">
-                                    <a href="${link}" target="_blank" class="btn-link">
-                                        <span class="icon">${icon}</span>
+                    const calendarUrl = generateCalendarLink(title, dateStr);
+                    const hasLink = link.toLowerCase().startsWith('http');
+                    const icon = getFileIcon(buttonText);
+
+                    let html = `
+                        <div class="event-item">
+                            <span class="date">${dateStr}</span>
+                            <span class="title">${title}</span>
+                            <div class="action-buttons">
+                                <a href="${calendarUrl}" target="_blank" class="btn-link btn-calendar" title="הוסף ליומן">
+                                    <span>📅</span>
+                                </a>
+                                ${hasLink ? `
+                                    <a href="${formatDriveLink(link)}" target="_blank" class="btn-link btn-material">
+                                        <span>${icon}</span>
                                         <span>${buttonText}</span>
                                     </a>
-                                </div>
+                                ` : ''}
                             </div>
-                        `;
-                    } else {
-                        listContainer.innerHTML += `
-                            <div class="event-item">
-                                <span class="date">${date}</span>
-                                <span class="title">${title}</span>
-                                <div class="btn-container"><div class="empty-space"></div></div>
-                            </div>
-                        `;
-                    }
+                        </div>
+                    `;
+                    listContainer.innerHTML += html;
                 }
             });
         } catch (error) {
