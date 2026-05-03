@@ -1,0 +1,177 @@
+<!DOCTYPE html>
+<html lang="he" dir="rtl">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>אירועים קרובים ג'1</title>
+    <style>
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background-color: #f0f4f8;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            min-height: 100vh;
+            margin: 0;
+            padding: 20px;
+        }
+
+        .container {
+            background-color: #ffffff;
+            width: 100%;
+            max-width: 500px;
+            border-radius: 20px;
+            box-shadow: 0 10px 25px rgba(0,0,0,0.05);
+            padding: 30px;
+        }
+
+        h1 {
+            text-align: center;
+            color: #334155;
+            font-size: 2.5rem;
+            margin-bottom: 30px;
+        }
+
+        .event-list {
+            display: flex;
+            flex-direction: column;
+            gap: 15px;
+        }
+
+        .event-item {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            padding: 12px;
+            border-radius: 12px;
+            transition: background-color 0.2s;
+        }
+
+        .event-info {
+            display: flex;
+            align-items: center;
+            gap: 20px;
+            flex-grow: 1;
+        }
+
+        .date {
+            font-size: 1.5rem;
+            font-weight: bold;
+            color: #1e293b;
+            min-width: 80px;
+        }
+
+        .title {
+            font-size: 1.2rem;
+            color: #475569;
+        }
+
+        .btn-link {
+            background-color: #3b82f6;
+            color: white;
+            text-decoration: none;
+            padding: 8px 16px;
+            border-radius: 8px;
+            font-size: 0.9rem;
+            font-weight: 600;
+            transition: background-color 0.2s;
+            white-space: nowrap;
+        }
+
+        .btn-link:hover {
+            background-color: #2563eb;
+        }
+
+        /* עיצוב מיוחד לשורה התחתונה (מסיבת סיום) */
+        .footer-event {
+            margin-top: 20px;
+            background-color: #f8fafc;
+            border: 1px solid #e2e8f0;
+            padding: 20px;
+            border-radius: 15px;
+            text-align: center;
+        }
+
+        .footer-event .title {
+            font-weight: bold;
+            display: block;
+            font-size: 1.4rem;
+        }
+
+        .footer-event .subtitle {
+            font-size: 0.9rem;
+            color: #64748b;
+        }
+    </style>
+</head>
+<body>
+
+<div class="container">
+    <h1>אירועים קרובים ג'1</h1>
+
+    <div class="event-list">
+        <!-- מבחן באנגלית -->
+        <div class="event-item">
+            <div class="event-info">
+                <span class="date">6/5</span>
+                <span class="title">מבחן באנגלית</span>
+            </div>
+            <a href="path/to/english_material.pdf" class="btn-link">חומר למבחן</a>
+        </div>
+
+        <!-- מצגות במדעים -->
+        <div class="event-item">
+            <div class="event-info">
+                <span class="date">10/5-15/5</span>
+                <span class="title">מצגות במדעים</span>
+            </div>
+            <a href="path/to/science_project.pdf" class="btn-link">הנחיות</a>
+        </div>
+
+        <!-- מבחן בשפה -->
+        <div class="event-item">
+            <div class="event-info">
+                <span class="date">12/5</span>
+                <span class="title">מבחן בשפה</span>
+            </div>
+            <a href="path/to/language_material.pdf" class="btn-link">חומר למבחן</a>
+        </div>
+
+        <!-- הגשת יומן קריאה -->
+        <div class="event-item">
+            <div class="event-info">
+                <span class="date">14/5</span>
+                <span class="title">הגשת יומן קריאה</span>
+            </div>
+            <a href="path/to/reading_journal.pdf" class="btn-link">דף הנחיות</a>
+        </div>
+
+        <!-- יריד אביב -->
+        <div class="event-item">
+            <div class="event-info">
+                <span class="date">15/5</span>
+                <span class="title">יריד אביב</span>
+            </div>
+            <a href="#" class="btn-link">פרטים</a>
+        </div>
+
+        <!-- מבחן במתמטיקה -->
+        <div class="event-item">
+            <div class="event-info">
+                <span class="date">20/5</span>
+                <span class="title">מבחן במתמטיקה</span>
+            </div>
+            <a href="path/to/math_material.pdf" class="btn-link">חומר למבחן</a>
+        </div>
+
+        <!-- מסיבת סיום -->
+        <div class="footer-event">
+            <span class="date">22/6</span>
+            <span class="title">מסיבת סיום</span>
+            <span class="subtitle">אירוע סיכום חגיגי לשנת הלימודים</span>
+        </div>
+    </div>
+</div>
+
+</body>
+</html>
