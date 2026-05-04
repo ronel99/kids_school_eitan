@@ -47,23 +47,6 @@
             border-radius: 12px;
         }
 
-        /* Upload Section Styling */
-        .upload-section {
-            margin-bottom: 25px;
-            padding: 15px;
-            background: #f0f7ff;
-            border-radius: 16px;
-            border: 2px dashed #bfdbfe;
-            text-align: center;
-        }
-
-        .upload-title {
-            margin: 0 0 10px 0;
-            font-weight: 700;
-            color: var(--primary-blue);
-            font-size: 0.95rem;
-        }
-
         .event-list {
             display: flex;
             flex-direction: column;
@@ -164,33 +147,21 @@
 <div class="container">
     <img src="thumbnail.png" alt="כותרת" class="header-image">
 
-    <!-- Upload Tool -->
-    <div class="upload-section">
-        <p class="upload-title">העלאת קובץ (דף קשר/הזמנה)</p>
-        <input type="file" id="fileInput" style="display: none;">
-        <button onclick="document.getElementById('fileInput').click()" id="uploadBtn" class="btn-link btn-material" style="width: 100%;">
-            📤 בחר קובץ וקבל לינק להדבקה
-        </button>
-        <div id="uploadStatus" style="margin-top: 10px; font-size: 0.8rem; color: var(--text-sub); min-height: 20px;"></div>
-    </div>
-
     <div id="loader" class="loading">טוען נתונים...</div>
     <div id="event-list" class="event-list"></div>
 
     <!-- Edit Button -->
     <div style="margin-top: 30px; border-top: 1px solid #f1f5f9; padding-top: 20px; text-align: center;">
         <a href="https://docs.google.com/spreadsheets/d/11Y9G8XIliGPGU5DLR3jQbz3M3BGU7TkcTjzXoPwYpLk/edit?usp=drivesdk" target="_blank" class="btn-link btn-edit">
-        
             ✏️ עריכת טבלת האירועים
         </a>
-        <p style="font-size: 0.7rem; color: #94a3b8; margin-top: 8px;">העלו קובץ למעלה, העתיקו את הלינק והדביקו בטבלה</p>
+        <p style="font-size: 0.7rem; color: #94a3b8; margin-top: 8px;">שינויים בטבלה יתעדכנו כאן באופן אוטומטי</p>
     </div>
 </div>
 
 <script>
     // --- Configuration ---
     const SHEET_CSV_URL = 'https://docs.google.com/spreadsheets/d/e/2PACX-1vT3CbYUVUDzXq2mZ1eZ0u1VQPJuZ7tUj3cGjYad9WDHq5ezf5kveHHQ2UrAcKWlV-7dJsgKM35tsud7/pub?gid=0&single=true&output=csv';
-    const APPS_SCRIPT_URL = 'YOUR_GOOGLE_APPS_SCRIPT_WEB_APP_URL'; // Replace this!
 
     // --- Fetch Events Logic ---
     async function fetchEvents() {
@@ -236,51 +207,6 @@
             document.getElementById('loader').innerText = 'שגיאה בטעינה.';
         }
     }
-
-    // --- Upload Logic ---
-    document.getElementById('fileInput').addEventListener('change', async function(e) {
-        const file = e.target.files[0];
-        if (!file) return;
-
-        const status = document.getElementById('uploadStatus');
-        const btn = document.getElementById('uploadBtn');
-        
-        status.innerHTML = "⌛ מעלה קובץ... נא לא לסגור";
-        btn.disabled = true;
-        btn.style.opacity = "0.5";
-
-        const reader = new FileReader();
-        reader.readAsDataURL(file);
-        reader.onload = async function() {
-            try {
-                const response = await fetch(APPS_SCRIPT_URL, {
-                    method: 'POST',
-                    mode: 'no-cors', // Important for Apps Script
-                    body: JSON.stringify({
-                        name: file.name,
-                        content: reader.result
-                    })
-                });
-                
-                // Note: With 'no-cors', we can't read the response body directly 
-                // in some browsers. If you need the exact link returned, 
-                // ensure your Apps Script is set to "Anyone" and use a standard fetch.
-                
-                // Assuming successful upload:
-                status.innerHTML = `<b style="color: var(--secondary-green);">הקובץ הועלה! ✅</b><br>הלינק הועתק. הדביקו אותו בטבלה.`;
-                
-                // If using standard fetch (CORS enabled):
-                // const result = await response.json();
-                // await navigator.clipboard.writeText(result.url);
-
-            } catch (error) {
-                status.innerText = "שגיאה. וודאו שהלינק של ה-Script תקין.";
-            } finally {
-                btn.disabled = false;
-                btn.style.opacity = "1";
-            }
-        };
-    });
 
     fetchEvents();
 </script>
