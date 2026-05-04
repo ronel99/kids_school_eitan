@@ -119,15 +119,58 @@
             box-sizing: border-box;
         }
 
-.btn-edit {
-    background-color: #f1f5f9;
-    color: var(--text-sub);
-    width: 100%;
-    margin-top: 10px;
-    border: 1px solid #e2e8f0;
-    box-sizing: border-box; /* מכריח את הפאדינג להיכנס בתוך ה-100% */
-    display: flex; /* מיישר את האלמנט בצורה אחידה בתוך הקונטיינר */
-}
+        .btn-edit {
+            background-color: #f1f5f9;
+            color: var(--text-sub);
+            width: 100%;
+            margin-top: 10px;
+            border: 1px solid #e2e8f0;
+            box-sizing: border-box;
+            display: flex;
+        }
+
+        /* סגנונות לכפתור וחלונית ההסבר */
+        .help-btn {
+            background: none;
+            border: none;
+            color: #64748b;
+            font-size: 0.8rem;
+            cursor: pointer;
+            margin-top: 12px;
+            font-family: inherit;
+            display: inline-flex;
+            align-items: center;
+            gap: 6px;
+            transition: color 0.2s;
+        }
+
+        .help-btn:hover {
+            color: var(--primary-blue);
+        }
+
+        .help-content {
+            display: none;
+            background-color: #f8fafc;
+            border: 1px solid #e2e8f0;
+            border-radius: 12px;
+            padding: 15px;
+            margin-top: 10px;
+            font-size: 0.85rem;
+            color: var(--text-sub);
+            text-align: right;
+            line-height: 1.5;
+            box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.05);
+        }
+
+        .help-content.show {
+            display: block;
+            animation: fadeIn 0.3s ease;
+        }
+
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(-5px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
 
         .loading { text-align: center; color: #94a3b8; padding: 20px; }
 
@@ -152,12 +195,32 @@
     <div id="loader" class="loading">טוען נתונים...</div>
     <div id="event-list" class="event-list"></div>
 
-    <!-- Edit Button -->
+    <!-- אזור תחתון: כפתור עריכה והסבר -->
     <div style="margin-top: 30px; border-top: 1px solid #f1f5f9; padding-top: 20px; text-align: center;">
+        
+        <!-- כפתור העריכה -->
         <a href="https://docs.google.com/spreadsheets/d/11Y9G8XIliGPGU5DLR3jQbz3M3BGU7TkcTjzXoPwYpLk/edit?usp=drivesdk" target="_blank" class="btn-link btn-edit">
-            ✏️ עריכת טבלת האירועים
+            <span>✏️</span>
+            <span>עריכת טבלת האירועים</span>
         </a>
-        <p style="font-size: 0.7rem; color: #94a3b8; margin-top: 8px;">שינויים בטבלה יתעדכנו כאן באופן אוטומטי</p>
+        
+        <!-- כפתור עזרה אקורדיון -->
+        <button class="help-btn" onclick="toggleHelp()">
+            <span>❔</span> איך מוסיפים או מעדכנים אירוע?
+        </button>
+        
+        <!-- חלונית ההסבר (מוסתרת כברירת מחדל) -->
+        <div id="helpBox" class="help-content">
+            <ol style="margin-top: 0; margin-bottom: 0; padding-right: 20px;">
+                <li>לחצו על כפתור העריכה כדי לפתוח את הטבלה.</li>
+                <li>הוסיפו שורה חדשה עם תאריך ושם האירוע.</li>
+                <li>(אופציונלי) אם יש קובץ מצורף, הדביקו את הקישור שלו בעמודה המתאימה.</li>
+            </ol>
+            <div style="margin-top: 10px; font-size: 0.75rem; color: #94a3b8; text-align: center;">
+                * השינויים בטבלה יתעדכנו באתר באופן אוטומטי.
+            </div>
+        </div>
+
     </div>
 </div>
 
@@ -208,6 +271,12 @@
         } catch (error) {
             document.getElementById('loader').innerText = 'שגיאה בטעינה.';
         }
+    }
+
+    // --- Toggle Help Box ---
+    function toggleHelp() {
+        const helpBox = document.getElementById('helpBox');
+        helpBox.classList.toggle('show');
     }
 
     fetchEvents();
