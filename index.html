@@ -5,7 +5,6 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
     <title>אירועים קרובים ג'1</title>
     
-    <!-- Meta Tags לתצוגה מקדימה בוואטסאפ -->
     <meta property="og:title" content="אירועים קרובים ג'1">
     <meta property="og:image" content="https://ronel99.github.io/kids_school_events/thumbnail.png">
     <meta property="og:type" content="website">
@@ -26,7 +25,7 @@
             padding: 15px;
             display: flex;
             justify-content: center;
-            align-items: flex-start; /* מונע מהקופסה הלבנה להימתח עד למטה סתם */
+            align-items: flex-start;
             direction: rtl;
             min-height: 100vh;
         }
@@ -49,11 +48,7 @@
             border-radius: 12px;
         }
 
-        .event-list {
-            display: flex;
-            flex-direction: column;
-            gap: 12px;
-        }
+        .event-list { display: flex; flex-direction: column; gap: 12px; }
 
         .event-item {
             display: grid;
@@ -66,122 +61,61 @@
             gap: 10px;
         }
 
-        .date {
-            font-size: 1.1rem;
-            font-weight: 700;
-            color: var(--text-main);
-            text-align: right;
-        }
+        .date { font-size: 1.1rem; font-weight: 700; color: var(--text-main); text-align: right; }
+        .title { font-size: 1rem; color: var(--text-sub); text-align: right; font-weight: 500; line-height: 1.3; }
 
-        .title {
-            font-size: 1rem;
-            color: var(--text-sub);
-            text-align: right;
-            font-weight: 500;
-            line-height: 1.3;
-        }
-
-        .action-buttons {
-            display: flex;
-            gap: 8px;
-            justify-content: flex-end;
-            align-items: center;
-        }
+        .action-buttons { display: flex; gap: 8px; justify-content: flex-end; align-items: center; }
 
         .btn-link {
-            text-decoration: none;
-            padding: 8px 10px;
-            border-radius: 10px;
-            font-size: 0.85rem;
-            font-weight: 600;
-            display: inline-flex;
-            align-items: center;
-            justify-content: center;
-            gap: 5px;
-            white-space: nowrap;
-            border: none;
-            cursor: pointer;
-            font-family: inherit;
+            text-decoration: none; padding: 8px 10px; border-radius: 10px; font-size: 0.85rem;
+            font-weight: 600; display: inline-flex; align-items: center; justify-content: center;
+            gap: 5px; white-space: nowrap; border: none; cursor: pointer; font-family: inherit;
         }
 
-        .btn-material {
-            background-color: var(--primary-blue);
-            color: white;
-            flex-grow: 1;
-        }
-
+        .btn-material { background-color: var(--primary-blue); color: white; flex-grow: 1; }
         .btn-calendar {
-            background-color: white;
-            color: var(--secondary-green);
-            border: 1px solid var(--secondary-green);
-            padding: 8px;
-            width: 38px;
-            height: 38px;
-            flex-shrink: 0;
-            box-sizing: border-box;
+            background-color: white; color: var(--secondary-green); border: 1px solid var(--secondary-green);
+            padding: 8px; width: 38px; height: 38px; flex-shrink: 0; box-sizing: border-box;
         }
 
         .btn-edit {
-            background-color: #f1f5f9;
-            color: var(--text-sub);
-            width: 100%;
-            margin-top: 10px;
-            border: 1px solid #e2e8f0;
-            box-sizing: border-box;
-            display: flex;
+            background-color: #f1f5f9; color: var(--text-sub); width: 100%; margin-top: 10px;
+            border: 1px solid #e2e8f0; box-sizing: border-box; display: flex; font-size: 1rem; padding: 12px;
+        }
+        .btn-edit:hover { background-color: #e2e8f0; }
+
+        /* Modal Styles */
+        .modal-overlay {
+            display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%;
+            background: rgba(0,0,0,0.5); justify-content: center; align-items: center; z-index: 1000;
+        }
+        .modal-content {
+            background: #fff; padding: 25px; border-radius: 16px; width: 90%; max-width: 400px;
+            direction: rtl; box-sizing: border-box; box-shadow: 0 10px 25px rgba(0,0,0,0.2);
+            max-height: 90vh; overflow-y: auto;
+        }
+        .modal-content h3 { margin-top: 0; color: var(--text-main); margin-bottom: 20px; }
+        
+        .details-text-box {
+            background: var(--bg-color); padding: 15px; border-radius: 8px; border: 1px solid #e2e8f0;
+            color: var(--text-sub); line-height: 1.6; white-space: pre-wrap; font-size: 0.95rem; margin-bottom: 20px;
         }
 
-        /* סגנונות לכפתור וחלונית ההסבר */
-        .help-btn {
-            background: none;
-            border: none;
-            color: #64748b;
-            font-size: 0.8rem;
-            cursor: pointer;
-            margin-top: 12px;
-            font-family: inherit;
-            display: inline-flex;
-            align-items: center;
-            gap: 6px;
-            transition: color 0.2s;
+        .form-group { margin-bottom: 15px; }
+        .form-group label { display: block; margin-bottom: 5px; font-size: 0.85rem; color: var(--text-sub); font-weight: 600; }
+        .form-group input, .form-group textarea {
+            width: 100%; padding: 10px; border: 1px solid #cbd5e1; border-radius: 8px;
+            box-sizing: border-box; font-family: inherit; font-size: 0.95rem;
         }
-
-        .help-btn:hover {
-            color: var(--primary-blue);
-        }
-
-        .help-content {
-            display: none;
-            background-color: #f8fafc;
-            border: 1px solid #e2e8f0;
-            border-radius: 12px;
-            padding: 15px;
-            margin-top: 10px;
-            font-size: 0.85rem;
-            color: var(--text-sub);
-            text-align: right;
-            line-height: 1.5;
-            box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.05);
-        }
-
-        .help-content.show {
-            display: block;
-            animation: fadeIn 0.3s ease;
-        }
-
-        @keyframes fadeIn {
-            from { opacity: 0; transform: translateY(-5px); }
-            to { opacity: 1; transform: translateY(0); }
-        }
+        .form-group input:focus, .form-group textarea:focus { outline: none; border-color: var(--primary-blue); }
+        .modal-actions { display: flex; gap: 10px; justify-content: flex-end; margin-top: 15px; }
+        .btn-save { background: var(--primary-blue); color: #fff; border: none; padding: 10px 18px; border-radius: 8px; cursor: pointer; font-weight: 600; }
+        .btn-cancel { background: #f1f5f9; color: var(--text-sub); border: none; padding: 10px 18px; border-radius: 8px; cursor: pointer; font-weight: 600; width: 100%; }
 
         .loading { text-align: center; color: #94a3b8; padding: 20px; }
 
         @media (max-width: 420px) {
-            .event-item {
-                grid-template-columns: 60px 1fr 120px;
-                padding: 10px;
-                gap: 5px;
-            }
+            .event-item { grid-template-columns: 60px 1fr 120px; padding: 10px; gap: 5px; }
             .date { font-size: 0.9rem; }
             .title { font-size: 0.85rem; }
             .btn-link { font-size: 0.75rem; padding: 6px 8px; }
@@ -197,38 +131,74 @@
     <div id="loader" class="loading">טוען נתונים...</div>
     <div id="event-list" class="event-list"></div>
 
-    <!-- אזור תחתון: כפתור עריכה והסבר -->
     <div style="margin-top: 30px; border-top: 1px solid #f1f5f9; padding-top: 20px; text-align: center;">
+        <button onclick="openAddModal()" class="btn-link btn-edit">
+            <span>➕</span>
+            <span>הוספת אירוע חדש</span>
+        </button>
         
-        <!-- כפתור העריכה -->
         <a href="https://docs.google.com/spreadsheets/d/11Y9G8XIliGPGU5DLR3jQbz3M3BGU7TkcTjzXoPwYpLk/edit?usp=drivesdk" target="_blank" class="btn-link btn-edit">
             <span>✏️</span>
             <span>עריכת טבלת האירועים</span>
         </a>
-        
-        <!-- כפתור עזרה אקורדיון -->
-        <button class="help-btn" onclick="toggleHelp()">
-            <span>❔</span> איך מוסיפים או מעדכנים אירוע?
-        </button>
-        
-        <!-- חלונית ההסבר (מוסתרת כברירת מחדל) -->
-        <div id="helpBox" class="help-content">
-            <ol style="margin-top: 0; margin-bottom: 0; padding-right: 20px;">
-                <li>לחצו על כפתור העריכה כדי לפתוח את הטבלה.</li>
-                <li>הוסיפו שורה חדשה עם תאריך ושם האירוע.</li>
-                <li>(אופציונלי) אם יש קובץ מצורף, הדביקו את הקישור שלו בעמודה המתאימה.</li>
-            </ol>
-            <div style="margin-top: 10px; font-size: 0.75rem; color: #94a3b8; text-align: center;">
-                * השינויים בטבלה יתעדכנו באתר באופן אוטומטי.
-            </div>
-        </div>
+    </div>
+</div>
 
+<!-- Modal Form for ADDING an event -->
+<div id="eventAddModal" class="modal-overlay">
+    <div class="modal-content">
+        <h3>הוספת אירוע</h3>
+        <form id="addEventForm">
+            <div class="form-group">
+                <label>תאריך (למשל: 15/05)</label>
+                <input type="text" id="fDate" required placeholder="הכנס תאריך">
+            </div>
+            <div class="form-group">
+                <label>שם האירוע</label>
+                <input type="text" id="fTitle" required placeholder="הכנס את שם האירוע">
+            </div>
+            <div class="form-group">
+                <label>טקסט חופשי או קישור (אופציונלי)</label>
+                <textarea id="fLink" rows="3" placeholder="הכנס טקסט חופשי או הדבק קישור (http://...)"></textarea>
+            </div>
+            <div class="form-group">
+                <label>טקסט לכפתור הפתיחה</label>
+                <input type="text" id="fBtnText" placeholder="למשל: פרטים, חומר, קישור...">
+            </div>
+            
+            <div class="modal-actions">
+                <button type="button" class="btn-cancel" style="width: auto;" onclick="closeAddModal()">ביטול</button>
+                <button type="submit" class="btn-save" id="submitBtn">שמירה</button>
+            </div>
+        </form>
+    </div>
+</div>
+
+<!-- Modal Dialog for VIEWING event text -->
+<div id="textDetailsModal" class="modal-overlay">
+    <div class="modal-content">
+        <h3 id="detailsTitle">כותרת האירוע</h3>
+        <div id="detailsText" class="details-text-box"></div>
+        <div class="modal-actions">
+            <button type="button" class="btn-cancel" onclick="closeDetailsModal()">סגור</button>
+        </div>
     </div>
 </div>
 
 <script>
     // --- Configuration ---
     const SHEET_CSV_URL = 'https://docs.google.com/spreadsheets/d/e/2PACX-1vT3CbYUVUDzXq2mZ1eZ0u1VQPJuZ7tUj3cGjYad9WDHq5ezf5kveHHQ2UrAcKWlV-7dJsgKM35tsud7/pub?gid=0&single=true&output=csv';
+    const APPS_SCRIPT_URL = 'https://script.google.com/macros/s/AKfycbxzWFDpdO_WwRY4BPgxIAoTAX6ZY-3HmyenuK1-RD4RWoa-WoSiW9sP7iScJhk4Ofm7/exec';
+
+    // Helper function to check if a string is a valid URL
+    function isValidUrl(string) {
+        try {
+            new URL(string);
+            return true;
+        } catch (_) {
+            return false;  
+        }
+    }
 
     // --- Fetch Events Logic ---
     async function fetchEvents() {
@@ -243,24 +213,42 @@
 
             rows.forEach(row => {
                 const columns = row.split(/,(?=(?:(?:[^"]*"){2})*[^"]*$)/).map(col => col.replace(/"/g, '').trim());
-if (columns.length >= 2 && columns[0].trim() !== "" && columns[1].trim() !== "") {
+                if (columns.length >= 2 && columns[0].trim() !== "" && columns[1].trim() !== "") {
                     const dateStr = columns[0];
                     const title = columns[1];
-                    const link = columns[2] || '';
-                    const buttonText = columns[3] || "חומר";
+                    const textContent = columns[2] || '';
+                    const buttonText = columns[3] || "פרטים";
 
                     const calendarUrl = `https://www.google.com/calendar/render?action=TEMPLATE&text=${encodeURIComponent(title + " - ג'1")}`;
+
+                    // Determine what the action button should be
+                    let actionButtonHTML = '';
+                    if (textContent) {
+                        if (isValidUrl(textContent)) {
+                            // If it's a URL, create an anchor tag
+                            actionButtonHTML = `
+                                <a href="${textContent}" target="_blank" class="btn-link btn-material">
+                                    <span>🔗</span><span>${buttonText}</span>
+                                </a>
+                            `;
+                        } else {
+                            // If it's plain text, create a button for the dialog
+                            const encodedTitle = encodeURIComponent(title);
+                            const encodedTextContent = encodeURIComponent(textContent);
+                            actionButtonHTML = `
+                                <button onclick="openDetailsModal('${encodedTitle}', '${encodedTextContent}')" class="btn-link btn-material">
+                                    <span>📄</span><span>${buttonText}</span>
+                                </button>
+                            `;
+                        }
+                    }
 
                     let html = `
                         <div class="event-item">
                             <span class="date">${dateStr}</span>
                             <span class="title">${title}</span>
                             <div class="action-buttons">
-                                ${link ? `
-                                    <a href="${link}" target="_blank" class="btn-link btn-material">
-                                        <span>📄</span><span>${buttonText}</span>
-                                    </a>
-                                ` : ''}
+                                ${actionButtonHTML}
                                 <a href="${calendarUrl}" target="_blank" class="btn-link btn-calendar">
                                     <span>📅</span>
                                 </a>
@@ -275,10 +263,67 @@ if (columns.length >= 2 && columns[0].trim() !== "" && columns[1].trim() !== "")
         }
     }
 
-    // --- Toggle Help Box ---
-    function toggleHelp() {
-        const helpBox = document.getElementById('helpBox');
-        helpBox.classList.toggle('show');
+    // --- View Details Modal Logic ---
+    function openDetailsModal(encodedTitle, encodedText) {
+        document.getElementById('detailsTitle').innerText = decodeURIComponent(encodedTitle);
+        document.getElementById('detailsText').innerText = decodeURIComponent(encodedText);
+        document.getElementById('textDetailsModal').style.display = 'flex';
+    }
+
+    function closeDetailsModal() {
+        document.getElementById('textDetailsModal').style.display = 'none';
+    }
+
+    // --- Add Event Modal Logic ---
+    function openAddModal() {
+        document.getElementById('eventAddModal').style.display = 'flex';
+    }
+
+    function closeAddModal() {
+        document.getElementById('eventAddModal').style.display = 'none';
+        document.getElementById('addEventForm').reset();
+    }
+
+    // --- Submit Form Logic ---
+    document.getElementById('addEventForm').addEventListener('submit', async (e) => {
+        e.preventDefault();
+        
+        const submitBtn = document.getElementById('submitBtn');
+        submitBtn.innerText = 'שומר...';
+        submitBtn.disabled = true;
+
+        const formData = new URLSearchParams();
+        formData.append('date', document.getElementById('fDate').value);
+        formData.append('title', document.getElementById('fTitle').value);
+        formData.append('link', document.getElementById('fLink').value);
+        formData.append('buttonText', document.getElementById('fBtnText').value || 'פרטים');
+
+        try {
+            await fetch(APPS_SCRIPT_URL, {
+                method: 'POST',
+                body: formData,
+                mode: 'no-cors'
+            });
+            
+            alert('האירוע נוסף בהצלחה!');
+            closeAddModal();
+            
+            submitBtn.innerText = 'מרענן...';
+            setTimeout(() => { location.reload(); }, 1500);
+
+        } catch (error) {
+            alert('אירעה שגיאה. אנא נסה שנית.');
+            submitBtn.innerText = 'שמירה';
+            submitBtn.disabled = false;
+        }
+    });
+
+    // Close Modals when clicking outside the box
+    window.onclick = function(event) {
+        const addModal = document.getElementById('eventAddModal');
+        const detailsModal = document.getElementById('textDetailsModal');
+        if (event.target === addModal) closeAddModal();
+        if (event.target === detailsModal) closeDetailsModal();
     }
 
     fetchEvents();
