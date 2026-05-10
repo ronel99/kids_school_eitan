@@ -3,9 +3,9 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-    <title>אירועים קרובים ג'1</title>
+    <title>אירועים קרובים</title>
     
-    <meta property="og:title" content="אירועים קרובים ג'1">
+    <meta property="og:title" content="אירועים קרובים">
     <meta property="og:image" content="https://ronel99.github.io/kids_school_events/thumbnail.png">
     <meta property="og:type" content="website">
 
@@ -126,7 +126,7 @@
 <body>
 
 <div class="container">
-    <img src="thumbnail.png" alt="כותרת" class="header-image">
+    <img id="headerImage" src="" alt="כותרת" class="header-image">
 
     <div id="loader" class="loading">טוען נתונים...</div>
     <div id="event-list" class="event-list"></div>
@@ -134,10 +134,10 @@
     <div style="margin-top: 30px; border-top: 1px solid #f1f5f9; padding-top: 20px; text-align: center;">
         <button onclick="openAddModal()" class="btn-link btn-edit">
             <span>➕</span>
-            <span>הוספת אירוע חדש</span>
+            <span id="addBtnText">הוספת אירוע חדש</span>
         </button>
         
-        <a href="https://docs.google.com/spreadsheets/d/11Y9G8XIliGPGU5DLR3jQbz3M3BGU7TkcTjzXoPwYpLk/edit?usp=drivesdk" target="_blank" class="btn-link btn-edit">
+        <a id="editTableBtn" href="#" target="_blank" class="btn-link btn-edit">
             <span>✏️</span>
             <span>עריכת טבלת האירועים</span>
         </a>
@@ -147,7 +147,7 @@
 <!-- Modal Form for ADDING an event -->
 <div id="eventAddModal" class="modal-overlay">
     <div class="modal-content">
-        <h3>הוספת אירוע</h3>
+        <h3 id="modalTitle">הוספת אירוע</h3>
         <form id="addEventForm">
             <div class="form-group">
                 <label>תאריך (למשל: 15/05)</label>
@@ -186,24 +186,69 @@
 </div>
 
 <script>
-    // --- Configuration ---
-    const SHEET_CSV_URL = 'https://docs.google.com/spreadsheets/d/e/2PACX-1vT3CbYUVUDzXq2mZ1eZ0u1VQPJuZ7tUj3cGjYad9WDHq5ezf5kveHHQ2UrAcKWlV-7dJsgKM35tsud7/pub?gid=0&single=true&output=csv';
-    const APPS_SCRIPT_URL = 'https://script.google.com/macros/s/AKfycbxzWFDpdO_WwRY4BPgxIAoTAX6ZY-3HmyenuK1-RD4RWoa-WoSiW9sP7iScJhk4Ofm7/exec';
+    // ==========================================
+    // --- 1. DYNAMIC CLASS CONFIGURATIONS ---
+    // ==========================================
+    const classConfigs = {
+        // Fallback default (Original ג'1 Data)
+        'default': {
+            className: "ג'1",
+            thumbnail: "thumbnail.png",
+            sheetCsvUrl: "https://docs.google.com/spreadsheets/d/e/2PACX-1vT3CbYUVUDzXq2mZ1eZ0u1VQPJuZ7tUj3cGjYad9WDHq5ezf5kveHHQ2UrAcKWlV-7dJsgKM35tsud7/pub?gid=0&single=true&output=csv",
+            appsScriptUrl: "https://script.google.com/macros/s/AKfycbxzWFDpdO_WwRY4BPgxIAoTAX6ZY-3HmyenuK1-RD4RWoa-WoSiW9sP7iScJhk4Ofm7/exec",
+            sheetEditUrl: "https://docs.google.com/spreadsheets/d/11Y9G8XIliGPGU5DLR3jQbz3M3BGU7TkcTjzXoPwYpLk/edit?usp=drivesdk"
+        },
+        
+        // Configuration for ?class=c1
+        'c1': {
+            className: "ג'1", 
+            thumbnail: "thumbnail_c1.png", // Replace with your C1 image name
+            sheetCsvUrl: "https://docs.google.com/spreadsheets/d/e/2PACX-1vT3CbYUVUDzXq2mZ1eZ0u1VQPJuZ7tUj3cGjYad9WDHq5ezf5kveHHQ2UrAcKWlV-7dJsgKM35tsud7/pub?gid=0&single=true&output=csv",
+            appsScriptUrl: "https://script.google.com/macros/s/AKfycbxzWFDpdO_WwRY4BPgxIAoTAX6ZY-3HmyenuK1-RD4RWoa-WoSiW9sP7iScJhk4Ofm7/exec",
+            sheetEditUrl: "https://docs.google.com/spreadsheets/d/11Y9G8XIliGPGU5DLR3jQbz3M3BGU7TkcTjzXoPwYpLk/edit?usp=drivesdk"
+        },
 
-    // Helper function to check if a string is a valid URL
-    function isValidUrl(string) {
-        try {
-            new URL(string);
-            return true;
-        } catch (_) {
-            return false;  
+        // Configuration for ?class=d4
+        'd4': {
+            className: "ד'4",
+            thumbnail: "thumbnail_d4.png", // Replace with your D4 image name
+            sheetCsvUrl: "https://docs.google.com/spreadsheets/d/e/2PACX-1vSr6BEmWHcQuGYf3sWLdZrMFrd1q_2labKDV95xNf9Oa1Xar2q3DtU7n-nfRaazR5q8PjrEjZP3XyoU/pub?output=csv",
+            appsScriptUrl: "https://script.google.com/macros/s/AKfycbz3gM6gQgkMAD3kMc6Am5LCzrojZX9xk6_wvdfi3E5XWjcqxfSJdgXuXM4cET7XNec3PA/exec",
+            sheetEditUrl: "https://docs.google.com/spreadsheets/d/1x2jQi0CUGE1TJ2glhwk2I7d_ji5gISOuFkD6TXvf3QA/edit?usp=drivesdk"
         }
+    };
+
+    // ==========================================
+    // --- 2. INITIALIZE PAGE BASED ON URL ---
+    // ==========================================
+    
+    // Read the ?class= parameter from the URL
+    const urlParams = new URLSearchParams(window.location.search);
+    const requestedClass = urlParams.get('class');
+    
+    // Select the configuration (fallback to 'default' if not found)
+    const currentConfig = classConfigs[requestedClass] || classConfigs['default'];
+
+    // Update UI elements dynamically based on the selected class
+    document.title = `אירועים קרובים ${currentConfig.className}`;
+    document.getElementById('headerImage').src = currentConfig.thumbnail;
+    document.getElementById('editTableBtn').href = currentConfig.sheetEditUrl;
+    document.getElementById('addBtnText').innerText = `הוספת אירוע חדש (${currentConfig.className})`;
+    document.getElementById('modalTitle').innerText = `הוספת אירוע - ${currentConfig.className}`;
+
+
+    // ==========================================
+    // --- 3. FETCH & DISPLAY EVENTS LOGIC ---
+    // ==========================================
+
+    function isValidUrl(string) {
+        try { new URL(string); return true; } catch (_) { return false; }
     }
 
-    // --- Fetch Events Logic ---
     async function fetchEvents() {
         try {
-            const response = await fetch(SHEET_CSV_URL + `&t=${Date.now()}`);
+            // Fetch using the dynamically selected CSV URL
+            const response = await fetch(currentConfig.sheetCsvUrl + `&t=${Date.now()}`);
             const data = await response.text();
             const rows = data.split(/\r?\n/).filter(row => row.trim() !== "").slice(1); 
             const listContainer = document.getElementById('event-list');
@@ -219,20 +264,18 @@
                     const textContent = columns[2] || '';
                     const buttonText = columns[3] || "פרטים";
 
-                    const calendarUrl = `https://www.google.com/calendar/render?action=TEMPLATE&text=${encodeURIComponent(title + " - ג'1")}`;
+                    // Dynamic Calendar Title
+                    const calendarUrl = `https://www.google.com/calendar/render?action=TEMPLATE&text=${encodeURIComponent(title + " - " + currentConfig.className)}`;
 
-                    // Determine what the action button should be
                     let actionButtonHTML = '';
                     if (textContent) {
                         if (isValidUrl(textContent)) {
-                            // If it's a URL, create an anchor tag
                             actionButtonHTML = `
                                 <a href="${textContent}" target="_blank" class="btn-link btn-material">
                                     <span>🔗</span><span>${buttonText}</span>
                                 </a>
                             `;
                         } else {
-                            // If it's plain text, create a button for the dialog
                             const encodedTitle = encodeURIComponent(title);
                             const encodedTextContent = encodeURIComponent(textContent);
                             actionButtonHTML = `
@@ -259,11 +302,15 @@
                 }
             });
         } catch (error) {
-            document.getElementById('loader').innerText = 'שגיאה בטעינה.';
+            document.getElementById('loader').innerText = 'שגיאה בטעינה. ודא שהקישורים מוגדרים נכון בקוד.';
         }
     }
 
-    // --- View Details Modal Logic ---
+
+    // ==========================================
+    // --- 4. MODAL INTERACTIONS & FORM SAVING ---
+    // ==========================================
+
     function openDetailsModal(encodedTitle, encodedText) {
         document.getElementById('detailsTitle').innerText = decodeURIComponent(encodedTitle);
         document.getElementById('detailsText').innerText = decodeURIComponent(encodedText);
@@ -274,7 +321,6 @@
         document.getElementById('textDetailsModal').style.display = 'none';
     }
 
-    // --- Add Event Modal Logic ---
     function openAddModal() {
         document.getElementById('eventAddModal').style.display = 'flex';
     }
@@ -284,7 +330,7 @@
         document.getElementById('addEventForm').reset();
     }
 
-    // --- Submit Form Logic ---
+    // Submit form using the dynamically selected Apps Script URL
     document.getElementById('addEventForm').addEventListener('submit', async (e) => {
         e.preventDefault();
         
@@ -299,13 +345,13 @@
         formData.append('buttonText', document.getElementById('fBtnText').value || 'פרטים');
 
         try {
-            await fetch(APPS_SCRIPT_URL, {
+            await fetch(currentConfig.appsScriptUrl, {
                 method: 'POST',
                 body: formData,
                 mode: 'no-cors'
             });
             
-            alert('האירוע נוסף בהצלחה!');
+            alert(`האירוע נוסף בהצלחה ל-${currentConfig.className}!`);
             closeAddModal();
             
             submitBtn.innerText = 'מרענן...';
@@ -318,7 +364,6 @@
         }
     });
 
-    // Close Modals when clicking outside the box
     window.onclick = function(event) {
         const addModal = document.getElementById('eventAddModal');
         const detailsModal = document.getElementById('textDetailsModal');
@@ -326,6 +371,7 @@
         if (event.target === detailsModal) closeDetailsModal();
     }
 
+    // Start fetching
     fetchEvents();
 </script>
 
